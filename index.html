@@ -1,0 +1,918 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>DEST Wireless Display</title>
+
+<style>
+:root{
+  --bg:#f5f7fa;
+  --panel:#fff;
+  --text:#172033;
+  --muted:#758096;
+  --blue:#2476df;
+  --green:#159b70;
+  --border:#e5eaf1;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+button,select,input{font:inherit}
+button{cursor:pointer}
+header{
+  height:68px;
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 24px;
+}
+.brand{
+  font-size:21px;
+  font-weight:800;
+  letter-spacing:-.5px;
+}
+.brand span{color:var(--blue)}
+.version{font-size:11px;color:var(--muted)}
+main{
+  max-width:1100px;
+  margin:35px auto;
+  padding:0 18px 50px;
+}
+.hero{text-align:center;margin-bottom:30px}
+.hero h1{font-size:30px;margin:0 0 9px}
+.hero p{color:var(--muted);margin:0}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
+}
+.card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 5px 20px #17203308;
+}
+.card h2{font-size:18px;margin:0 0 8px}
+.desc{color:var(--muted);font-size:13px;line-height:1.7}
+label{
+  display:block;
+  font-size:13px;
+  font-weight:650;
+  margin:17px 0 7px;
+}
+select,input{
+  width:100%;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px;
+  background:#fff;
+  color:var(--text);
+}
+button.primary{
+  width:100%;
+  border:0;
+  border-radius:11px;
+  padding:14px;
+  color:white;
+  font-weight:700;
+  margin-top:17px;
+  background:var(--blue);
+}
+button.green{background:var(--green)}
+button.secondary{
+  border:1px solid var(--border);
+  background:white;
+  border-radius:10px;
+  padding:10px 14px;
+  color:var(--text);
+}
+button:disabled{opacity:.45;cursor:not-allowed}
+.preview{
+  position:relative;
+  background:#080c14;
+  border-radius:16px;
+  overflow:hidden;
+  min-height:250px;
+  margin-top:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+video{
+  width:100%;
+  max-height:65vh;
+  object-fit:contain;
+  display:none;
+}
+.placeholder{
+  color:#8490a4;
+  text-align:center;
+  padding:30px;
+  line-height:1.8;
+}
+.status{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:13px;
+  padding:15px 18px;
+  margin-top:18px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:13px;
+}
+.dot{
+  width:9px;height:9px;border-radius:50%;
+  background:#aab2c0;
+  flex-shrink:0;
+}
+.dot.ok{background:#16a779}
+.dot.error{background:#e24e58}
+.settings{
+  margin-top:18px;
+}
+.settings summary{
+  cursor:pointer;
+  font-weight:700;
+  padding:5px 0;
+}
+.setting-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.check{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-size:13px;
+  margin-top:17px;
+}
+.check input{width:auto}
+#diagnostic{
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  font-size:12px;
+  color:#667085;
+  background:#f7f9fc;
+  border-radius:10px;
+  padding:12px;
+  margin-top:12px;
+}
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:16px;
+}
+.metric{
+  background:#f6f8fb;
+  border-radius:11px;
+  padding:13px;
+  text-align:center;
+}
+.metric strong{display:block;font-size:19px}
+.metric small{color:var(--muted)}
+footer{
+  text-align:center;
+  color:#9aa3b2;
+  font-size:11px;
+  padding:25px;
+}
+@media(max-width:700px){
+  header{padding:0 16px}
+  main{margin-top:24px}
+  .grid{grid-template-columns:1fr}
+  .hero h1{font-size:25px}
+  .card{padding:18px}
+  .setting-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">DEST <span>Wireless Display</span></div>
+  <div class="version">VERSION 7.0</div>
+</header>
+
+<main>
+
+<section class="hero">
+  <h1>Wireless Display</h1>
+  <p>端末同士をワイヤレスで接続して画面を共有します。</p>
+</section>
+
+<div class="grid">
+
+<section class="card">
+  <h2>画面を配信</h2>
+  <p class="desc">
+    この端末の画面を別の端末へ配信します。
+    iPad・iPhoneではOSとSafariの対応状況に依存します。
+  </p>
+
+  <label for="sendRoom">接続ルーム</label>
+  <select id="sendRoom"></select>
+
+  <button class="primary" id="sendButton">
+    <span>画面配信を開始</span>
+  </button>
+</section>
+
+<section class="card">
+  <h2>映像を受信</h2>
+  <p class="desc">
+    配信中の端末に接続して映像を受信します。
+  </p>
+
+  <label for="recvRoom">接続ルーム</label>
+  <select id="recvRoom"></select>
+
+  <button class="primary green" id="recvButton">
+    映像の受信を開始
+  </button>
+</section>
+
+</div>
+
+<div class="preview">
+  <div class="placeholder" id="placeholder">
+    <div style="font-size:34px">▣</div>
+    <div>映像はここに表示されます</div>
+  </div>
+  <video id="video" autoplay playsinline controls></video>
+</div>
+
+<div class="status">
+  <span class="dot" id="dot"></span>
+  <span id="status">待機中</span>
+</div>
+
+<div class="metrics">
+  <div class="metric">
+    <strong id="fps">--</strong>
+    <small>受信FPS</small>
+  </div>
+  <div class="metric">
+    <strong id="ping">--</strong>
+    <small>RTT (ms)</small>
+  </div>
+  <div class="metric">
+    <strong id="resolution">--</strong>
+    <small>解像度</small>
+  </div>
+</div>
+
+<section class="card settings">
+  <details>
+    <summary>配信設定・診断情報</summary>
+
+    <div class="setting-grid">
+
+      <div>
+        <label for="quality">画質</label>
+        <select id="quality">
+          <option value="720">720p</option>
+          <option value="1080" selected>1080p</option>
+          <option value="1440">1440p</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="fpsSetting">フレームレート</label>
+        <select id="fpsSetting">
+          <option value="24">24 FPS</option>
+          <option value="30" selected>30 FPS</option>
+          <option value="60">60 FPS</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="bitrate">ビットレート</label>
+        <select id="bitrate">
+          <option value="2500000">2.5 Mbps</option>
+          <option value="5000000" selected>5 Mbps</option>
+          <option value="8000000">8 Mbps</option>
+          <option value="12000000">12 Mbps</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="codec">映像コーデック</label>
+        <select id="codec">
+          <option value="auto">自動</option>
+          <option value="VP9">VP9優先</option>
+          <option value="VP8">VP8優先</option>
+        </select>
+      </div>
+
+    </div>
+
+    <label class="check">
+      <input type="checkbox" id="shareAudio">
+      音声共有を有効にする
+    </label>
+
+    <div id="diagnostic">診断情報はまだありません。</div>
+
+    <button class="secondary" id="copyDiagnostic">
+      診断情報をコピー
+    </button>
+  </details>
+</section>
+
+<button class="secondary" id="stopButton"
+style="width:100%;margin-top:18px">
+  接続を終了
+</button>
+
+</main>
+
+<footer>
+  DEST Wireless Display · Developed by DEST
+</footer>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+  getDatabase, ref, set, get, remove,
+  push, onValue, onChildAdded, off
+}
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+
+/* Firebase設定 */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCcj7lgExzJp7hXMLUBV5ECHZmYj5mQQc",
+  authDomain: "display-1-9b480.firebaseapp.com",
+  projectId: "display-1-9b480",
+  storageBucket: "display-1-9b480.firebasestorage.app",
+  messagingSenderId: "934395065450",
+  appId: "1:934395065450:web:7c42423e44d14361a50613",
+  databaseURL: "https://display-1-9b480-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+/* DOM */
+
+const $ = id => document.getElementById(id);
+
+const video = $("video");
+const placeholder = $("placeholder");
+
+const rooms = ["55-A","55-B","56-A","56-B"];
+
+for(const id of ["sendRoom","recvRoom"]){
+  rooms.forEach(room=>{
+    const option = document.createElement("option");
+    option.value = room;
+    option.textContent = room;
+    $(id).appendChild(option);
+  });
+}
+
+/* 状態 */
+
+let pc = null;
+let localStream = null;
+let activeRoom = null;
+let activeRole = null;
+let unsubscribers = [];
+let statsTimer = null;
+let candidateQueue = [];
+let remoteDescriptionReady = false;
+let diagnostic = [];
+let lastFrames = 0;
+
+const ICE = {
+  iceServers: [
+    {urls:"stun:stun.l.google.com:19302"},
+    {urls:"stun:stun1.l.google.com:19302"}
+  ]
+};
+
+/* 表示 */
+
+function log(message){
+  const time = new Date().toLocaleTimeString();
+  diagnostic.push(`[${time}] ${message}`);
+  diagnostic = diagnostic.slice(-30);
+  $("diagnostic").textContent = diagnostic.join("\n");
+}
+
+function status(message,type="normal"){
+  $("status").textContent = message;
+  $("dot").className =
+    "dot " + (type==="ok" ? "ok" : type==="error" ? "error" : "");
+  log(message);
+}
+
+function showVideo(stream){
+  video.srcObject = stream;
+  video.style.display = "block";
+  placeholder.style.display = "none";
+  video.play().catch(err=>{
+    log("動画再生エラー: "+err.message);
+  });
+}
+
+function hideVideo(){
+  video.pause();
+  video.srcObject = null;
+  video.style.display = "none";
+  placeholder.style.display = "block";
+}
+
+/* Firebaseパス */
+
+function path(name){
+  return ref(db,`rooms/${activeRoom}/${name}`);
+}
+
+function listen(unsubscribe){
+  unsubscribers.push(unsubscribe);
+}
+
+function clearListeners(){
+  unsubscribers.forEach(fn=>{
+    try{fn()}catch{}
+  });
+  unsubscribers = [];
+}
+
+/* 接続終了 */
+
+function cleanup(){
+  clearListeners();
+
+  if(statsTimer){
+    clearInterval(statsTimer);
+    statsTimer = null;
+  }
+
+  if(localStream){
+    localStream.getTracks().forEach(track=>{
+      track.stop();
+    });
+    localStream = null;
+  }
+
+  if(pc){
+    pc.ontrack = null;
+    pc.onicecandidate = null;
+    pc.close();
+    pc = null;
+  }
+
+  candidateQueue = [];
+  remoteDescriptionReady = false;
+
+  video.srcObject = null;
+  hideVideo();
+
+  $("fps").textContent = "--";
+  $("ping").textContent = "--";
+  $("resolution").textContent = "--";
+
+  activeRole = null;
+}
+
+/* ICE候補 */
+
+async function addCandidate(candidate){
+  if(!pc || !remoteDescriptionReady){
+    candidateQueue.push(candidate);
+    return;
+  }
+
+  try{
+    await pc.addIceCandidate(
+      new RTCIceCandidate(candidate)
+    );
+  }catch(err){
+    log("ICE追加エラー: "+err.message);
+  }
+}
+
+async function flushCandidates(){
+  const queue = [...candidateQueue];
+  candidateQueue = [];
+
+  for(const candidate of queue){
+    await addCandidate(candidate);
+  }
+}
+
+/* WebRTC */
+
+function createPeerConnection(){
+  pc = new RTCPeerConnection(ICE);
+
+  pc.onconnectionstatechange = ()=>{
+    if(!pc)return;
+
+    const state = pc.connectionState;
+    log("接続状態: "+state);
+
+    if(state==="connected"){
+      status("接続しました", "ok");
+    }else if(state==="failed"){
+      status("接続に失敗しました。ネットワークを確認してください。","error");
+    }else if(state==="disconnected"){
+      status("接続が切断されました");
+    }else if(state==="connecting"){
+      status("接続中...");
+    }
+  };
+
+  pc.oniceconnectionstatechange = ()=>{
+    if(pc){
+      log("ICE: "+pc.iceConnectionState);
+    }
+  };
+
+  pc.onicecandidate = event=>{
+    if(!event.candidate)return;
+
+    const candidate = event.candidate.toJSON();
+
+    const target =
+      activeRole==="sender" ? "s" : "r";
+
+    push(path(target),candidate).catch(err=>{
+      log("ICE送信エラー: "+err.message);
+    });
+  };
+
+  pc.ontrack = event=>{
+    const stream =
+      event.streams[0] || new MediaStream([event.track]);
+
+    showVideo(stream);
+    status("映像を受信しています","ok");
+
+    event.track.addEventListener("ended",()=>{
+      status("映像が終了しました");
+    });
+  };
+
+  return pc;
+}
+
+/* 診断 */
+
+function startStats(){
+  if(statsTimer)clearInterval(statsTimer);
+
+  statsTimer = setInterval(async()=>{
+    if(!pc)return;
+
+    try{
+      const report = await pc.getStats();
+
+      let rtt = null;
+      let frames = null;
+      let width = null;
+      let height = null;
+
+      report.forEach(item=>{
+        if(
+          item.type==="candidate-pair" &&
+          item.state==="succeeded" &&
+          item.nominated
+        ){
+          if(item.currentRoundTripTime!=null){
+            rtt = Math.round(item.currentRoundTripTime*1000);
+          }
+        }
+
+        if(item.type==="inbound-rtp" && item.kind==="video"){
+          frames = item.framesPerSecond ??
+            item.framesDecoded ??
+            null;
+
+          width = item.frameWidth;
+          height = item.frameHeight;
+        }
+      });
+
+      if(rtt!==null){
+        $("ping").textContent = rtt;
+      }
+
+      if(width && height){
+        $("resolution").textContent = `${width}×${height}`;
+      }
+
+      if(frames!==null && frames<=120){
+        $("fps").textContent = Math.round(frames);
+      }
+
+    }catch(err){
+      log("統計取得エラー: "+err.message);
+    }
+  },1500);
+}
+
+/* 画面共有APIの確認 */
+
+function checkDisplayCapture(){
+  if(!window.isSecureContext){
+    throw new Error(
+      "安全な接続ではありません。HTTPSで開いてください。"
+    );
+  }
+
+  if(!navigator.mediaDevices){
+    throw new Error(
+      "このブラウザではMediaDevices APIが利用できません。"
+    );
+  }
+
+  if(typeof navigator.mediaDevices.getDisplayMedia!=="function"){
+    throw new Error(
+      "getDisplayMediaが利用できません。SafariまたはOSの対応状況を確認してください。"
+    );
+  }
+}
+
+/* 配信 */
+
+async function startSending(){
+  $("sendButton").disabled = true;
+
+  try{
+    cleanup();
+
+    activeRoom = $("sendRoom").value;
+    activeRole = "sender";
+
+    status("画面共有APIを確認しています");
+
+    checkDisplayCapture();
+
+    const resolution = Number($("quality").value);
+    const fps = Number($("fpsSetting").value);
+    const bitrate = Number($("bitrate").value);
+
+    const heights = {
+      720:720,
+      1080:1080,
+      1440:1440
+    };
+
+    const height = heights[resolution];
+    const width = Math.round(height*16/9);
+
+    /*
+      必ずボタン操作から直接呼び出す。
+      iPadOS・Safariの制約によっては拒否される。
+    */
+
+    status("画面共有の許可を待っています");
+
+    localStream =
+      await navigator.mediaDevices.getDisplayMedia({
+        video:{
+          width:{ideal:width},
+          height:{ideal:height},
+          frameRate:{ideal:fps,max:fps}
+        },
+        audio:$("shareAudio").checked
+      });
+
+    log("画面共有を取得しました");
+
+    showVideo(localStream);
+
+    createPeerConnection();
+
+    localStream.getTracks().forEach(track=>{
+      pc.addTrack(track,localStream);
+    });
+
+    const sender =
+      pc.getSenders().find(s=>s.track?.kind==="video");
+
+    if(sender){
+      try{
+        const params = sender.getParameters();
+
+        if(!params.encodings.length){
+          params.encodings = [{}];
+        }
+
+        params.encodings[0].maxBitrate = bitrate;
+        params.encodings[0].maxFramerate = fps;
+
+        await sender.setParameters(params);
+
+      }catch(err){
+        log("画質設定を適用できませんでした: "+err.message);
+      }
+    }
+
+    /* 古いシグナリング情報を削除 */
+
+    await Promise.all([
+      remove(path("offer")),
+      remove(path("answer")),
+      remove(path("s")),
+      remove(path("r"))
+    ]);
+
+    const offer = await pc.createOffer();
+
+    await pc.setLocalDescription(offer);
+
+    await set(path("offer"),{
+      type:offer.type,
+      sdp:offer.sdp
+    });
+
+    log("配信情報を登録しました");
+
+    listen(onValue(path("answer"),async snapshot=>{
+      if(!snapshot.exists() || !pc)return;
+
+      if(pc.currentRemoteDescription)return;
+
+      try{
+        await pc.setRemoteDescription(
+          new RTCSessionDescription(snapshot.val())
+        );
+
+        remoteDescriptionReady = true;
+        await flushCandidates();
+
+        status("受信端末と接続しています");
+
+      }catch(err){
+        log("Answer設定エラー: "+err.message);
+      }
+    }));
+
+    listen(onChildAdded(path("r"),snapshot=>{
+      if(snapshot.exists()){
+        addCandidate(snapshot.val());
+      }
+    }));
+
+    localStream.getVideoTracks()[0].addEventListener("ended",()=>{
+      status("画面共有が終了しました");
+      cleanup();
+    });
+
+    startStats();
+
+    status("配信中。受信端末から接続してください","ok");
+
+  }catch(err){
+    const name = err.name || "UnknownError";
+
+    log("配信エラー名: "+name);
+    log("配信エラー詳細: "+err.message);
+
+    status(name+": "+err.message,"error");
+
+    alert(
+      "画面配信に失敗しました。\n\n"+
+      "エラー名: "+name+
+      "\n詳細: "+err.message
+    );
+
+    cleanup();
+
+  }finally{
+    $("sendButton").disabled = false;
+  }
+}
+
+/* 受信 */
+
+async function startReceiving(){
+  $("recvButton").disabled = true;
+
+  try{
+    cleanup();
+
+    activeRoom = $("recvRoom").value;
+    activeRole = "receiver";
+
+    status("配信情報を確認しています");
+
+    const snapshot = await get(path("offer"));
+
+    if(!snapshot.exists()){
+      throw new Error(
+        "配信が見つかりません。送信側が先に配信を開始してください。"
+      );
+    }
+
+    const offer = snapshot.val();
+
+    createPeerConnection();
+
+    await pc.setRemoteDescription(
+      new RTCSessionDescription(offer)
+    );
+
+    remoteDescriptionReady = true;
+    await flushCandidates();
+
+    const answer = await pc.createAnswer();
+
+    await pc.setLocalDescription(answer);
+
+    await set(path("answer"),{
+      type:answer.type,
+      sdp:answer.sdp
+    });
+
+    listen(onChildAdded(path("s"),snapshot=>{
+      if(snapshot.exists()){
+        addCandidate(snapshot.val());
+      }
+    }));
+
+    startStats();
+
+    status("受信側を起動しました。接続を待っています");
+
+  }catch(err){
+    log("受信エラー名: "+(err.name||"UnknownError"));
+    log("受信エラー詳細: "+err.message);
+
+    status(err.message,"error");
+
+    alert(err.message);
+
+    cleanup();
+
+  }finally{
+    $("recvButton").disabled = false;
+  }
+}
+
+/* ボタン */
+
+$("sendButton").addEventListener("click",startSending);
+$("recvButton").addEventListener("click",startReceiving);
+
+$("stopButton").addEventListener("click",()=>{
+  cleanup();
+  status("接続を終了しました");
+});
+
+/* 診断情報コピー */
+
+$("copyDiagnostic").addEventListener("click",async()=>{
+  try{
+    await navigator.clipboard.writeText(
+      $("diagnostic").textContent
+    );
+    status("診断情報をコピーしました","ok");
+  }catch{
+    alert("コピーできませんでした");
+  }
+});
+
+/* 初期診断 */
+
+log("DEST Wireless Display V7.0 起動");
+
+log("ブラウザ: "+navigator.userAgent);
+
+log("HTTPS: "+window.isSecureContext);
+
+log(
+  "画面共有API: "+
+  (
+    typeof navigator.mediaDevices?.getDisplayMedia==="function"
+    ?"利用可能"
+    :"利用不可"
+  )
+);
+
+status("待機中");
+
+</script>
+</body>
+</html>
