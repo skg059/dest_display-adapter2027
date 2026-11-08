@@ -1,918 +1,534 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#101827">
-<title>DEST Wireless Display</title>
+<meta name="viewport"
+ content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<title>DEST Wireless Display Receiver</title>
 
 <style>
-:root{
-  --bg:#f5f7fa;
-  --panel:#fff;
-  --text:#172033;
-  --muted:#758096;
-  --blue:#2476df;
-  --green:#159b70;
-  --border:#e5eaf1;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:var(--bg);
-  color:var(--text);
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    font-family: Arial, sans-serif;
 }
-button,select,input{font:inherit}
-button{cursor:pointer}
-header{
-  height:68px;
-  background:#fff;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 24px;
+
+#screen {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
 }
-.brand{
-  font-size:21px;
-  font-weight:800;
-  letter-spacing:-.5px;
+
+#mainImage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
 }
-.brand span{color:var(--blue)}
-.version{font-size:11px;color:var(--muted)}
-main{
-  max-width:1100px;
-  margin:35px auto;
-  padding:0 18px 50px;
+
+#receiverVideo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+    display: none;
 }
-.hero{text-align:center;margin-bottom:30px}
-.hero h1{font-size:30px;margin:0 0 9px}
-.hero p{color:var(--muted);margin:0}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:18px;
-}
-.card{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:22px;
-  box-shadow:0 5px 20px #17203308;
-}
-.card h2{font-size:18px;margin:0 0 8px}
-.desc{color:var(--muted);font-size:13px;line-height:1.7}
-label{
-  display:block;
-  font-size:13px;
-  font-weight:650;
-  margin:17px 0 7px;
-}
-select,input{
-  width:100%;
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:12px;
-  background:#fff;
-  color:var(--text);
-}
-button.primary{
-  width:100%;
-  border:0;
-  border-radius:11px;
-  padding:14px;
-  color:white;
-  font-weight:700;
-  margin-top:17px;
-  background:var(--blue);
-}
-button.green{background:var(--green)}
-button.secondary{
-  border:1px solid var(--border);
-  background:white;
-  border-radius:10px;
-  padding:10px 14px;
-  color:var(--text);
-}
-button:disabled{opacity:.45;cursor:not-allowed}
-.preview{
-  position:relative;
-  background:#080c14;
-  border-radius:16px;
-  overflow:hidden;
-  min-height:250px;
-  margin-top:20px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-video{
-  width:100%;
-  max-height:65vh;
-  object-fit:contain;
-  display:none;
-}
-.placeholder{
-  color:#8490a4;
-  text-align:center;
-  padding:30px;
-  line-height:1.8;
-}
-.status{
-  background:#fff;
-  border:1px solid var(--border);
-  border-radius:13px;
-  padding:15px 18px;
-  margin-top:18px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:13px;
-}
-.dot{
-  width:9px;height:9px;border-radius:50%;
-  background:#aab2c0;
-  flex-shrink:0;
-}
-.dot.ok{background:#16a779}
-.dot.error{background:#e24e58}
-.settings{
-  margin-top:18px;
-}
-.settings summary{
-  cursor:pointer;
-  font-weight:700;
-  padding:5px 0;
-}
-.setting-grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
-}
-.check{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  font-size:13px;
-  margin-top:17px;
-}
-.check input{width:auto}
-#diagnostic{
-  white-space:pre-wrap;
-  overflow-wrap:anywhere;
-  font-size:12px;
-  color:#667085;
-  background:#f7f9fc;
-  border-radius:10px;
-  padding:12px;
-  margin-top:12px;
-}
-.metrics{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  margin-top:16px;
-}
-.metric{
-  background:#f6f8fb;
-  border-radius:11px;
-  padding:13px;
-  text-align:center;
-}
-.metric strong{display:block;font-size:19px}
-.metric small{color:var(--muted)}
-footer{
-  text-align:center;
-  color:#9aa3b2;
-  font-size:11px;
-  padding:25px;
-}
-@media(max-width:700px){
-  header{padding:0 16px}
-  main{margin-top:24px}
-  .grid{grid-template-columns:1fr}
-  .hero h1{font-size:25px}
-  .card{padding:18px}
-  .setting-grid{grid-template-columns:1fr}
+
+.hidden {
+    display: none !important;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <div class="brand">DEST <span>Wireless Display</span></div>
-  <div class="version">VERSION 7.0</div>
-</header>
+<div id="screen">
 
-<main>
+    <img id="mainImage" src="1.png" alt="DEST">
 
-<section class="hero">
-  <h1>Wireless Display</h1>
-  <p>端末同士をワイヤレスで接続して画面を共有します。</p>
-</section>
-
-<div class="grid">
-
-<section class="card">
-  <h2>画面を配信</h2>
-  <p class="desc">
-    この端末の画面を別の端末へ配信します。
-    iPad・iPhoneではOSとSafariの対応状況に依存します。
-  </p>
-
-  <label for="sendRoom">接続ルーム</label>
-  <select id="sendRoom"></select>
-
-  <button class="primary" id="sendButton">
-    <span>画面配信を開始</span>
-  </button>
-</section>
-
-<section class="card">
-  <h2>映像を受信</h2>
-  <p class="desc">
-    配信中の端末に接続して映像を受信します。
-  </p>
-
-  <label for="recvRoom">接続ルーム</label>
-  <select id="recvRoom"></select>
-
-  <button class="primary green" id="recvButton">
-    映像の受信を開始
-  </button>
-</section>
+    <video
+        id="receiverVideo"
+        autoplay
+        playsinline
+    ></video>
 
 </div>
 
-<div class="preview">
-  <div class="placeholder" id="placeholder">
-    <div style="font-size:34px">▣</div>
-    <div>映像はここに表示されます</div>
-  </div>
-  <video id="video" autoplay playsinline controls></video>
-</div>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 
-<div class="status">
-  <span class="dot" id="dot"></span>
-  <span id="status">待機中</span>
-</div>
+<script>
 
-<div class="metrics">
-  <div class="metric">
-    <strong id="fps">--</strong>
-    <small>受信FPS</small>
-  </div>
-  <div class="metric">
-    <strong id="ping">--</strong>
-    <small>RTT (ms)</small>
-  </div>
-  <div class="metric">
-    <strong id="resolution">--</strong>
-    <small>解像度</small>
-  </div>
-</div>
+// ========================================
+// DEST Wireless Display Receiver
+// SKREC_M001
+// ========================================
 
-<section class="card settings">
-  <details>
-    <summary>配信設定・診断情報</summary>
+// 基本設定
+const ADAPTER_ID = "DEST/SKREC_M001";
+const DATABASE_KEY = "DEST_SKREC_M001";
+const PIN_CODE = "2394";
 
-    <div class="setting-grid">
+const START_DURATION = 7000;
+const CONNECTED_IMAGE_DURATION = 5000;
+const ERROR_DURATION = 5000;
+const DISCONNECT_GRACE = 3000;
 
-      <div>
-        <label for="quality">画質</label>
-        <select id="quality">
-          <option value="720">720p</option>
-          <option value="1080" selected>1080p</option>
-          <option value="1440">1440p</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="fpsSetting">フレームレート</label>
-        <select id="fpsSetting">
-          <option value="24">24 FPS</option>
-          <option value="30" selected>30 FPS</option>
-          <option value="60">60 FPS</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="bitrate">ビットレート</label>
-        <select id="bitrate">
-          <option value="2500000">2.5 Mbps</option>
-          <option value="5000000" selected>5 Mbps</option>
-          <option value="8000000">8 Mbps</option>
-          <option value="12000000">12 Mbps</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="codec">映像コーデック</label>
-        <select id="codec">
-          <option value="auto">自動</option>
-          <option value="VP9">VP9優先</option>
-          <option value="VP8">VP8優先</option>
-        </select>
-      </div>
-
-    </div>
-
-    <label class="check">
-      <input type="checkbox" id="shareAudio">
-      音声共有を有効にする
-    </label>
-
-    <div id="diagnostic">診断情報はまだありません。</div>
-
-    <button class="secondary" id="copyDiagnostic">
-      診断情報をコピー
-    </button>
-  </details>
-</section>
-
-<button class="secondary" id="stopButton"
-style="width:100%;margin-top:18px">
-  接続を終了
-</button>
-
-</main>
-
-<footer>
-  DEST Wireless Display · Developed by DEST
-</footer>
-
-<script type="module">
-
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-
-import {
-  getDatabase, ref, set, get, remove,
-  push, onValue, onChildAdded, off
-}
-from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
-
-/* Firebase設定 */
-
+// Firebase設定
 const firebaseConfig = {
-  apiKey: "AIzaSyCcj7lgExzJp7hXMLUBV5ECHZmYj5mQQc",
-  authDomain: "display-1-9b480.firebaseapp.com",
-  projectId: "display-1-9b480",
-  storageBucket: "display-1-9b480.firebasestorage.app",
-  messagingSenderId: "934395065450",
-  appId: "1:934395065450:web:7c42423e44d14361a50613",
-  databaseURL: "https://display-1-9b480-default-rtdb.asia-southeast1.firebasedatabase.app"
+    apiKey: "AIzaSyCcj7lgExzJp7hXMLUBV5ECHZmYj5mQQc",
+    authDomain: "display-1-9b480.firebaseapp.com",
+    projectId: "display-1-9b480",
+    storageBucket: "display-1-9b480.firebasestorage.app",
+    messagingSenderId: "934395065450",
+    appId: "1:934395065450:web:7c42423e44d14361a50613",
+    databaseURL:
+    "https://display-1-9b480-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+// ========================================
+// 初期化
+// ========================================
 
-/* DOM */
+const mainImage = document.getElementById("mainImage");
+const video = document.getElementById("receiverVideo");
 
-const $ = id => document.getElementById(id);
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-const video = $("video");
-const placeholder = $("placeholder");
+const basePath = "adapters/" + DATABASE_KEY;
 
-const rooms = ["55-A","55-B","56-A","56-B"];
+const offerRef = db.ref(basePath + "/offer");
+const answerRef = db.ref(basePath + "/answer");
+const senderCandidatesRef = db.ref(basePath + "/s");
+const receiverCandidatesRef = db.ref(basePath + "/r");
 
-for(const id of ["sendRoom","recvRoom"]){
-  rooms.forEach(room=>{
-    const option = document.createElement("option");
-    option.value = room;
-    option.textContent = room;
-    $(id).appendChild(option);
-  });
+let peer = null;
+let remoteStream = null;
+let currentSession = null;
+
+let state = "startup";
+let connectionTimer = null;
+let errorTimer = null;
+let disconnectTimer = null;
+let candidateListener = null;
+let offerListener = null;
+let connectedTimer = null;
+
+// ========================================
+// 画像の先読み
+// ========================================
+
+["1.png", "2.png", "3.png", "4.png"].forEach(src => {
+    const img = new Image();
+    img.src = src;
+});
+
+// ========================================
+// 画面表示
+// ========================================
+
+function showImage(src, newState) {
+
+    state = newState;
+
+    video.style.display = "none";
+    video.srcObject = null;
+
+    mainImage.src = src;
+    mainImage.style.display = "block";
 }
 
-/* 状態 */
+function showVideo() {
 
-let pc = null;
-let localStream = null;
-let activeRoom = null;
-let activeRole = null;
-let unsubscribers = [];
-let statsTimer = null;
-let candidateQueue = [];
-let remoteDescriptionReady = false;
-let diagnostic = [];
-let lastFrames = 0;
+    state = "connected";
 
-const ICE = {
-  iceServers: [
-    {urls:"stun:stun.l.google.com:19302"},
-    {urls:"stun:stun1.l.google.com:19302"}
-  ]
-};
-
-/* 表示 */
-
-function log(message){
-  const time = new Date().toLocaleTimeString();
-  diagnostic.push(`[${time}] ${message}`);
-  diagnostic = diagnostic.slice(-30);
-  $("diagnostic").textContent = diagnostic.join("\n");
+    mainImage.style.display = "none";
+    video.style.display = "block";
 }
 
-function status(message,type="normal"){
-  $("status").textContent = message;
-  $("dot").className =
-    "dot " + (type==="ok" ? "ok" : type==="error" ? "error" : "");
-  log(message);
+// ========================================
+// エラー処理
+// ========================================
+
+function showError(message) {
+
+    if (state === "error") return;
+
+    console.warn(message);
+
+    clearTimeout(connectionTimer);
+    clearTimeout(connectedTimer);
+    clearTimeout(disconnectTimer);
+
+    cleanupPeer();
+
+    showImage("4.png", "error");
+
+    errorTimer = setTimeout(() => {
+        showImage("2.png", "waiting");
+    }, ERROR_DURATION);
 }
 
-function showVideo(stream){
-  video.srcObject = stream;
-  video.style.display = "block";
-  placeholder.style.display = "none";
-  video.play().catch(err=>{
-    log("動画再生エラー: "+err.message);
-  });
-}
+// ========================================
+// 接続終了処理
+// ========================================
 
-function hideVideo(){
-  video.pause();
-  video.srcObject = null;
-  video.style.display = "none";
-  placeholder.style.display = "block";
-}
+function cleanupPeer() {
 
-/* Firebaseパス */
+    clearTimeout(connectionTimer);
+    clearTimeout(connectedTimer);
+    clearTimeout(disconnectTimer);
 
-function path(name){
-  return ref(db,`rooms/${activeRoom}/${name}`);
-}
-
-function listen(unsubscribe){
-  unsubscribers.push(unsubscribe);
-}
-
-function clearListeners(){
-  unsubscribers.forEach(fn=>{
-    try{fn()}catch{}
-  });
-  unsubscribers = [];
-}
-
-/* 接続終了 */
-
-function cleanup(){
-  clearListeners();
-
-  if(statsTimer){
-    clearInterval(statsTimer);
-    statsTimer = null;
-  }
-
-  if(localStream){
-    localStream.getTracks().forEach(track=>{
-      track.stop();
-    });
-    localStream = null;
-  }
-
-  if(pc){
-    pc.ontrack = null;
-    pc.onicecandidate = null;
-    pc.close();
-    pc = null;
-  }
-
-  candidateQueue = [];
-  remoteDescriptionReady = false;
-
-  video.srcObject = null;
-  hideVideo();
-
-  $("fps").textContent = "--";
-  $("ping").textContent = "--";
-  $("resolution").textContent = "--";
-
-  activeRole = null;
-}
-
-/* ICE候補 */
-
-async function addCandidate(candidate){
-  if(!pc || !remoteDescriptionReady){
-    candidateQueue.push(candidate);
-    return;
-  }
-
-  try{
-    await pc.addIceCandidate(
-      new RTCIceCandidate(candidate)
-    );
-  }catch(err){
-    log("ICE追加エラー: "+err.message);
-  }
-}
-
-async function flushCandidates(){
-  const queue = [...candidateQueue];
-  candidateQueue = [];
-
-  for(const candidate of queue){
-    await addCandidate(candidate);
-  }
-}
-
-/* WebRTC */
-
-function createPeerConnection(){
-  pc = new RTCPeerConnection(ICE);
-
-  pc.onconnectionstatechange = ()=>{
-    if(!pc)return;
-
-    const state = pc.connectionState;
-    log("接続状態: "+state);
-
-    if(state==="connected"){
-      status("接続しました", "ok");
-    }else if(state==="failed"){
-      status("接続に失敗しました。ネットワークを確認してください。","error");
-    }else if(state==="disconnected"){
-      status("接続が切断されました");
-    }else if(state==="connecting"){
-      status("接続中...");
+    if (candidateListener) {
+        senderCandidatesRef.off(
+            "child_added",
+            candidateListener
+        );
+        candidateListener = null;
     }
-  };
 
-  pc.oniceconnectionstatechange = ()=>{
-    if(pc){
-      log("ICE: "+pc.iceConnectionState);
+    if (peer) {
+        peer.ontrack = null;
+        peer.onicecandidate = null;
+        peer.onconnectionstatechange = null;
+        peer.close();
+        peer = null;
     }
-  };
 
-  pc.onicecandidate = event=>{
-    if(!event.candidate)return;
+    if (remoteStream) {
+        remoteStream.getTracks().forEach(track => {
+            track.stop();
+        });
+        remoteStream = null;
+    }
 
-    const candidate = event.candidate.toJSON();
+    video.pause();
+    video.srcObject = null;
+    video.style.display = "none";
 
-    const target =
-      activeRole==="sender" ? "s" : "r";
-
-    push(path(target),candidate).catch(err=>{
-      log("ICE送信エラー: "+err.message);
-    });
-  };
-
-  pc.ontrack = event=>{
-    const stream =
-      event.streams[0] || new MediaStream([event.track]);
-
-    showVideo(stream);
-    status("映像を受信しています","ok");
-
-    event.track.addEventListener("ended",()=>{
-      status("映像が終了しました");
-    });
-  };
-
-  return pc;
+    currentSession = null;
 }
 
-/* 診断 */
+// ========================================
+// 切断時
+// ========================================
 
-function startStats(){
-  if(statsTimer)clearInterval(statsTimer);
+function returnToWaiting() {
 
-  statsTimer = setInterval(async()=>{
-    if(!pc)return;
+    cleanupPeer();
 
-    try{
-      const report = await pc.getStats();
+    showImage("2.png", "waiting");
 
-      let rtt = null;
-      let frames = null;
-      let width = null;
-      let height = null;
+    console.log("待機画面に戻りました");
+}
 
-      report.forEach(item=>{
-        if(
-          item.type==="candidate-pair" &&
-          item.state==="succeeded" &&
-          item.nominated
-        ){
-          if(item.currentRoundTripTime!=null){
-            rtt = Math.round(item.currentRoundTripTime*1000);
-          }
+// ========================================
+// 接続成功
+// ========================================
+
+function connectionSucceeded() {
+
+    if (state === "connected" ||
+        state === "connected-image") return;
+
+    clearTimeout(connectionTimer);
+    clearTimeout(disconnectTimer);
+
+    state = "connected-image";
+
+    showImage("3.png", "connected-image");
+
+    console.log("WebRTC接続成功");
+
+    connectedTimer = setTimeout(async () => {
+
+        if (!peer || peer.connectionState !== "connected") {
+            return;
         }
 
-        if(item.type==="inbound-rtp" && item.kind==="video"){
-          frames = item.framesPerSecond ??
-            item.framesDecoded ??
-            null;
+        showVideo();
 
-          width = item.frameWidth;
-          height = item.frameHeight;
+        try {
+            await video.play();
+        } catch (error) {
+            console.warn("映像再生エラー:", error);
         }
-      });
 
-      if(rtt!==null){
-        $("ping").textContent = rtt;
-      }
+    }, CONNECTED_IMAGE_DURATION);
+}
 
-      if(width && height){
-        $("resolution").textContent = `${width}×${height}`;
-      }
+// ========================================
+// ICE候補処理
+// ========================================
 
-      if(frames!==null && frames<=120){
-        $("fps").textContent = Math.round(frames);
-      }
+async function addSenderCandidate(snapshot) {
 
-    }catch(err){
-      log("統計取得エラー: "+err.message);
+    if (!peer || !peer.remoteDescription) return;
+
+    const candidate = snapshot.val();
+
+    if (!candidate) return;
+
+    try {
+        await peer.addIceCandidate(
+            new RTCIceCandidate(candidate)
+        );
+    } catch (error) {
+        console.warn("ICE候補エラー:", error);
     }
-  },1500);
 }
 
-/* 画面共有APIの確認 */
+// ========================================
+// WebRTC接続
+// ========================================
 
-function checkDisplayCapture(){
-  if(!window.isSecureContext){
-    throw new Error(
-      "安全な接続ではありません。HTTPSで開いてください。"
-    );
-  }
+async function receiveOffer(offer) {
 
-  if(!navigator.mediaDevices){
-    throw new Error(
-      "このブラウザではMediaDevices APIが利用できません。"
-    );
-  }
+    if (!offer || !offer.sdp || !offer.sessionId) {
+        return;
+    }
 
-  if(typeof navigator.mediaDevices.getDisplayMedia!=="function"){
-    throw new Error(
-      "getDisplayMediaが利用できません。SafariまたはOSの対応状況を確認してください。"
-    );
-  }
-}
+    if (offer.sessionId === currentSession) {
+        return;
+    }
 
-/* 配信 */
+    // PIN確認
+    if (String(offer.pin) !== PIN_CODE) {
+        showError("PINが一致しません");
+        return;
+    }
 
-async function startSending(){
-  $("sendButton").disabled = true;
+    if (state === "connected" ||
+        state === "connected-image" ||
+        state === "connecting") {
+        return;
+    }
 
-  try{
-    cleanup();
+    cleanupPeer();
 
-    activeRoom = $("sendRoom").value;
-    activeRole = "sender";
+    currentSession = offer.sessionId;
+    state = "connecting";
 
-    status("画面共有APIを確認しています");
+    console.log("接続要求を受信");
 
-    checkDisplayCapture();
+    peer = new RTCPeerConnection({
+        iceServers: [
+            {
+                urls: "stun:stun.l.google.com:19302"
+            },
+            {
+                urls: "stun:stun1.l.google.com:19302"
+            }
+        ]
+    });
 
-    const resolution = Number($("quality").value);
-    const fps = Number($("fpsSetting").value);
-    const bitrate = Number($("bitrate").value);
+    remoteStream = new MediaStream();
 
-    const heights = {
-      720:720,
-      1080:1080,
-      1440:1440
+    video.srcObject = remoteStream;
+
+    // 映像・音声受信
+    peer.ontrack = event => {
+
+        const track = event.track;
+
+        if (!remoteStream.getTracks().some(
+            t => t.id === track.id
+        )) {
+            remoteStream.addTrack(track);
+        }
+
+        track.onended = () => {
+            returnToWaiting();
+        };
+
+        if (state === "connected") {
+            video.play().catch(() => {});
+        }
     };
 
-    const height = heights[resolution];
-    const width = Math.round(height*16/9);
+    // 受信側ICE候補
+    peer.onicecandidate = event => {
 
-    /*
-      必ずボタン操作から直接呼び出す。
-      iPadOS・Safariの制約によっては拒否される。
-    */
+        if (event.candidate && currentSession) {
 
-    status("画面共有の許可を待っています");
+            receiverCandidatesRef.push({
+                candidate: event.candidate.candidate,
+                sdpMid: event.candidate.sdpMid,
+                sdpMLineIndex: event.candidate.sdpMLineIndex,
+                sessionId: currentSession
+            });
+        }
+    };
 
-    localStream =
-      await navigator.mediaDevices.getDisplayMedia({
-        video:{
-          width:{ideal:width},
-          height:{ideal:height},
-          frameRate:{ideal:fps,max:fps}
-        },
-        audio:$("shareAudio").checked
-      });
+    // 接続状態監視
+    peer.onconnectionstatechange = () => {
 
-    log("画面共有を取得しました");
+        if (!peer) return;
 
-    showVideo(localStream);
+        const connectionState = peer.connectionState;
 
-    createPeerConnection();
+        console.log("接続状態:", connectionState);
 
-    localStream.getTracks().forEach(track=>{
-      pc.addTrack(track,localStream);
-    });
-
-    const sender =
-      pc.getSenders().find(s=>s.track?.kind==="video");
-
-    if(sender){
-      try{
-        const params = sender.getParameters();
-
-        if(!params.encodings.length){
-          params.encodings = [{}];
+        if (connectionState === "connected") {
+            connectionSucceeded();
         }
 
-        params.encodings[0].maxBitrate = bitrate;
-        params.encodings[0].maxFramerate = fps;
+        if (connectionState === "disconnected") {
 
-        await sender.setParameters(params);
+            clearTimeout(disconnectTimer);
 
-      }catch(err){
-        log("画質設定を適用できませんでした: "+err.message);
-      }
-    }
+            disconnectTimer = setTimeout(() => {
 
-    /* 古いシグナリング情報を削除 */
+                if (peer &&
+                    peer.connectionState === "disconnected") {
+                    returnToWaiting();
+                }
 
-    await Promise.all([
-      remove(path("offer")),
-      remove(path("answer")),
-      remove(path("s")),
-      remove(path("r"))
-    ]);
+            }, DISCONNECT_GRACE);
+        }
 
-    const offer = await pc.createOffer();
+        if (connectionState === "failed" ||
+            connectionState === "closed") {
 
-    await pc.setLocalDescription(offer);
+            returnToWaiting();
+        }
+    };
 
-    await set(path("offer"),{
-      type:offer.type,
-      sdp:offer.sdp
-    });
+    // 送信側ICE候補の監視
+    candidateListener = snapshot => {
 
-    log("配信情報を登録しました");
+        const data = snapshot.val();
 
-    listen(onValue(path("answer"),async snapshot=>{
-      if(!snapshot.exists() || !pc)return;
+        if (!data || data.sessionId !== currentSession) {
+            return;
+        }
 
-      if(pc.currentRemoteDescription)return;
+        addSenderCandidate({
+            val: () => data
+        });
+    };
 
-      try{
-        await pc.setRemoteDescription(
-          new RTCSessionDescription(snapshot.val())
+    senderCandidatesRef.on(
+        "child_added",
+        candidateListener
+    );
+
+    try {
+
+        // Offer設定
+        await peer.setRemoteDescription(
+            new RTCSessionDescription({
+                type: "offer",
+                sdp: offer.sdp
+            })
         );
 
-        remoteDescriptionReady = true;
-        await flushCandidates();
+        // Answer生成
+        const answer = await peer.createAnswer();
 
-        status("受信端末と接続しています");
+        await peer.setLocalDescription(answer);
 
-      }catch(err){
-        log("Answer設定エラー: "+err.message);
-      }
-    }));
+        // FirebaseにAnswerを保存
+        await answerRef.set({
+            type: answer.type,
+            sdp: answer.sdp,
+            sessionId: currentSession
+        });
 
-    listen(onChildAdded(path("r"),snapshot=>{
-      if(snapshot.exists()){
-        addCandidate(snapshot.val());
-      }
-    }));
+        // 接続タイムアウト
+        connectionTimer = setTimeout(() => {
 
-    localStream.getVideoTracks()[0].addEventListener("ended",()=>{
-      status("画面共有が終了しました");
-      cleanup();
-    });
+            if (peer &&
+                peer.connectionState !== "connected") {
+                showError("接続タイムアウト");
+            }
 
-    startStats();
+        }, 20000);
 
-    status("配信中。受信端末から接続してください","ok");
+    } catch (error) {
 
-  }catch(err){
-    const name = err.name || "UnknownError";
-
-    log("配信エラー名: "+name);
-    log("配信エラー詳細: "+err.message);
-
-    status(name+": "+err.message,"error");
-
-    alert(
-      "画面配信に失敗しました。\n\n"+
-      "エラー名: "+name+
-      "\n詳細: "+err.message
-    );
-
-    cleanup();
-
-  }finally{
-    $("sendButton").disabled = false;
-  }
-}
-
-/* 受信 */
-
-async function startReceiving(){
-  $("recvButton").disabled = true;
-
-  try{
-    cleanup();
-
-    activeRoom = $("recvRoom").value;
-    activeRole = "receiver";
-
-    status("配信情報を確認しています");
-
-    const snapshot = await get(path("offer"));
-
-    if(!snapshot.exists()){
-      throw new Error(
-        "配信が見つかりません。送信側が先に配信を開始してください。"
-      );
+        console.error("接続処理エラー:", error);
+        showError("接続処理に失敗しました");
     }
-
-    const offer = snapshot.val();
-
-    createPeerConnection();
-
-    await pc.setRemoteDescription(
-      new RTCSessionDescription(offer)
-    );
-
-    remoteDescriptionReady = true;
-    await flushCandidates();
-
-    const answer = await pc.createAnswer();
-
-    await pc.setLocalDescription(answer);
-
-    await set(path("answer"),{
-      type:answer.type,
-      sdp:answer.sdp
-    });
-
-    listen(onChildAdded(path("s"),snapshot=>{
-      if(snapshot.exists()){
-        addCandidate(snapshot.val());
-      }
-    }));
-
-    startStats();
-
-    status("受信側を起動しました。接続を待っています");
-
-  }catch(err){
-    log("受信エラー名: "+(err.name||"UnknownError"));
-    log("受信エラー詳細: "+err.message);
-
-    status(err.message,"error");
-
-    alert(err.message);
-
-    cleanup();
-
-  }finally{
-    $("recvButton").disabled = false;
-  }
 }
 
-/* ボタン */
+// ========================================
+// Firebase接続監視
+// ========================================
 
-$("sendButton").addEventListener("click",startSending);
-$("recvButton").addEventListener("click",startReceiving);
+function startListening() {
 
-$("stopButton").addEventListener("click",()=>{
-  cleanup();
-  status("接続を終了しました");
+    offerListener = snapshot => {
+
+        const offer = snapshot.val();
+
+        if (!offer) return;
+
+        receiveOffer(offer);
+    };
+
+    offerRef.on("value", offerListener, error => {
+        console.error("Firebaseエラー:", error);
+        showError("Firebase接続エラー");
+    });
+}
+
+// ========================================
+// ネットワーク監視
+// ========================================
+
+window.addEventListener("offline", () => {
+
+    if (state !== "startup" &&
+        state !== "waiting" &&
+        state !== "error") {
+
+        showError("ネットワークが切断されました");
+    }
 });
 
-/* 診断情報コピー */
+// ========================================
+// 起動処理
+// ========================================
 
-$("copyDiagnostic").addEventListener("click",async()=>{
-  try{
-    await navigator.clipboard.writeText(
-      $("diagnostic").textContent
-    );
-    status("診断情報をコピーしました","ok");
-  }catch{
-    alert("コピーできませんでした");
-  }
+window.addEventListener("load", () => {
+
+    console.log("DEST Wireless Display Receiver 起動");
+    console.log("Adapter:", ADAPTER_ID);
+
+    showImage("1.png", "startup");
+
+    setTimeout(() => {
+
+        showImage("2.png", "waiting");
+
+        startListening();
+
+    }, START_DURATION);
+
 });
-
-/* 初期診断 */
-
-log("DEST Wireless Display V7.0 起動");
-
-log("ブラウザ: "+navigator.userAgent);
-
-log("HTTPS: "+window.isSecureContext);
-
-log(
-  "画面共有API: "+
-  (
-    typeof navigator.mediaDevices?.getDisplayMedia==="function"
-    ?"利用可能"
-    :"利用不可"
-  )
-);
-
-status("待機中");
 
 </script>
+
 </body>
 </html>
